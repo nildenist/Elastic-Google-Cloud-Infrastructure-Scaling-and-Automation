@@ -136,8 +136,23 @@ Cloud VPN supports both static and dynamic routes.
 
 ## Dynamic routin with Cloud Router
 
+In order to use dynamic routes, you need to configure Cloud Routers.
+
 <p align="left">
   <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/7ddeeb48-58d2-4611-9df2-62f3e327a216" />
 </p> 
 
+
+Cloud Router can manage routes for a Cloud VPN tunnel using **B**order **G**ateway **P**rotocol, or BGP.  This routing method **allows** for routes to be updated and exchanged <ins>without changing</ins> the tunnel configuration.
+
 ![CloudRouter](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/398051e2-4e62-4f44-ae98-0a317a1756b0)
+
+
+This diagram shows two different regional subnets in a VPC network, namely Test and Prod. The on-premises network has ***29*** subnets, and the two networks are connected through **Cloud VPN tunnels**.
+
+### How would you add a new “Staging” subnet in the Google Cloud network and a new on-premises 10.0.30.0/24 subnet to handle growing traffic in your data center?
+
+To automatically propagate network configuration changes, the VPN tunnel uses Cloud Router to establish a BGP session between the VPC and the on-premises VPN gateway, which must support BGP. The new subnets are then seamlessly advertised between networks. This means that **instances in the new subnets can start sending and receiving traffic immediately**.
+
+To set up **BGP**, an additional IP address has to be assigned to each end of the VPN tunnel.These two IP addresses must be link-local IP addresses, belonging to the IP address range **169.254.0.0/16**. These addresses <ins>are not</ins> part of IP address space of either network and are used exclusively for establishing a BGP session.
+
