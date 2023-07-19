@@ -33,7 +33,7 @@ Your VPC network has subnets in **us-east1** and **us-west1**, with Google Cloud
 
 These resources are able to communicate using their **internal IP** addresses because routing within a network is automatically configured (<ins>assuming that firewall rules allow the communication</ins>).
 
-Now, in order to connect to your on-premises network and its resources, you need to configure your ***Cloud VPN gateway***, ***on-premises VPN gateway***, and ***two VPN tunnels***.
+In order to connect to your on-premises network and its resources, you need to configure your ***Cloud VPN gateway***, ***on-premises VPN gateway***, and ***two VPN tunnels***.
 
 The Cloud VPN gateway is a **regional** resource that uses a **regional external IP address**.
 
@@ -84,7 +84,60 @@ HA VPN supports site-to-site VPN in one of the following recommended topologies 
 
 ## HA VPN gateway to peer VPN devices
 
+There are three typical peer gateway configurations for HA VPN.
+  - An HA VPN gateway to two separate peer VPN devices, each with its own IP address,
+  - An HA VPN gateway to one peer VPN device that uses two separate IP addresses and
+  - An HA VPN gateway to one peer VPN device that uses one IP address.
+
+Let's walk through an example.
+
 ![HAPNVtoPeerVPN](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/0b65fd41-23a0-4ebd-9599-ff8ae106b707)
 
+In this topology, **one** HA VPN gateway connects to **two** peer devices. <br/>
+Each peer device has **one** interface and **one** external IP address.<br/>
+The HA VPN gateway uses **two** tunnels, **one** tunnel to **each** peer device.<br/>
+If your peer-side gateway is ***hardware-based***, having a **second peer-side gateway** provides **redundancy** and **failover** on that side of the connection.<br/>
+A second physical gateway lets you take one of the gateways offline for **software upgrades** or **other scheduled maintenance**. It also **protects** you if there is a failure in one of the devices.<br/>
+In Google Cloud, the ```REDUNDANCY_TYPE``` for this configuration takes the value ```TWO_IPS_REDUNDANCY```. The example shown here provides 99.99% availability.
 
+## HA VPN external VPN gateway to Amazon Web Services (AWS)
 
+When configuring an HA VPN external VPN gateway to Amazon Web Services (AWS), you can use either a **transit gateway** or a **virtual private gateway**. <ins>Only</ins> the transit gateway supports **e**qual-**c**ost **m**ulti**p**ath (**ECMP**) routing.
+
+When enabled, ECMP ***equally*** distributes traffic across active tunnels.
+
+![HAVPNAWS](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/65d0e4fa-227c-419f-b30f-b420e8099179)
+
+In this topology, there are **three** major gateway components to set up for this configuration.
+  - An **HA VPN gateway** in Google Cloud with two interfaces,
+  - **two AWS virtual private gateways**, which connect to your HA VPN gateway, and 
+  - **an external VPN gateway** resource in Google Cloud that represents your AWS virtual private gateway.
+
+This resource provides information to Google Cloud about your AWS gateway.
+
+The <ins>supported</ins> AWS configuration uses a **total of four tunnels**.Two tunnels from one AWS virtual private gateway to one interface of the HA VPN gateway, and two tunnels from the other AWS virtual private gateway to the other interface of the HA VPN gateway. 
+
+## Two HA VPN gateways connected to each other
+
+You can connect two Google Cloud VPC networks together by using an HA VPN gateway in each network.
+
+![HAVPNbetweenGCnetworks](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/c83575e4-1319-43a5-864f-29509cfbfdb2)
+
+The configuration shown provides 99.99% availability.
+
+From the perspective of each HA VPN gateway you create **two tunnels**. You connect interface 0 on one HA VPN gateway to interface 0 on the other HA VPN, and interface 1 on one HA VPN gateway to interface 1 on the other HA VPN.
+
+Cloud VPN topologies: https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies <br/>
+Moving to HA VPN: https://cloud.google.com/network-connectivity/docs/vpn/how-to/moving-to-ha-vpn
+
+# Cloud VPN: Static and Dynamic routes
+
+Cloud VPN supports both static and dynamic routes.
+
+## Dynamic routin with Cloud Router
+
+<p align="left">
+  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/7ddeeb48-58d2-4611-9df2-62f3e327a216" />
+</p> 
+
+![CloudRouter](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/398051e2-4e62-4f44-ae98-0a317a1756b0)
