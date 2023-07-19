@@ -2,8 +2,9 @@
 
 ## What is Cloud VPN?
 
+
 <p align="left">
-  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/436f3e98-87d1-4d60-aea7-94f2b72cfa39" />
+  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/436f3e98-87d1-4d60-aea7-94f2b72cfa39"/> 
 </p> 
 
 **Cloud VPN** securely connects your on-premises network to your Google Cloud VPC network through an **IPsec VPN tunnel**.
