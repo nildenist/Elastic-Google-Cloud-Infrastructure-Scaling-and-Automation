@@ -32,6 +32,7 @@ In this workshop, you learn how to perform the following tasks:
 In this task you set up a Global VPC with **two** custom subnets and **two** VM instances running in each zone.
 
 1. In Cloud Shell, create a VPC network called vpc-demo:
+   
 ![vpc_demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f06c371e-0ca2-4472-9a29-c0532a4eb7a5)
 
 ```console
