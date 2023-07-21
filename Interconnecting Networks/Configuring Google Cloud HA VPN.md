@@ -8,6 +8,11 @@ HA VPN is a **regional** per VPC, VPN solution. HA VPN gateways have two interfa
 
 In this workshop you create a global VPC called vpc-demo, with two custom subnets in **us-east1** and **us-central1**. In this VPC, you add a Compute Engine instance in each region. You then create a second VPC called on-prem to simulate a customer's on-premises data center. In this second VPC, you add a subnet in region us-central1 and a Compute Engine instance running in this region. Finally, you add an HA VPN and a cloud router in each VPC and run two tunnels from each HA VPN gateway before testing the configuration to verify the 99.99% SLA.
 
+In this workshop, you create HA VPN as in this architecture that you see in the following:
+
+![architecture-of-HA-VPN](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/339b5c96-42fd-42de-823c-0c981850d306)
+
+You will see that this architecture is splitted for each task with the related shell code. This will help your understanding for codes in which part you dealed with. 
 
 ## Objectives
 
