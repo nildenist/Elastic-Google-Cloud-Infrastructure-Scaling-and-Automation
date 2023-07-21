@@ -212,9 +212,13 @@ Note that ```INTERFACE0``` and ```INTERFACE1``` IP adresses, these are regional 
 gcloud compute vpn-gateways create on-prem-vpn-gw1 --network on-prem --region us-central1
 ```
 The output should look similar to this:
+
 ![HA-VPN-on-prem-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/3d3a6623-59c2-48b4-b815-d064cce0ce3c)
 
 Note that again ```INTERFACE0``` and ```INTERFACE1``` IP adresses, these are regional external IP adresses.
+
+![INTERFACES](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/9eccbf24-cd2a-425a-a2b2-f453304d9e37)
+
 
 3. View details of the **vpc-demo-vpn-gw1** gateway to verify its settings:
 
@@ -271,4 +275,68 @@ Note that ```asn``` values different with each other, asn values 65001 on vpn-de
 
 In this task you create VPN tunnels between the two gateways. For HA VPN setup, you add two tunnels from each gateway to the remote setup. You create a tunnel on **interface0** and connect to **interface0** on the remote gateway. Next, you create another tunnel on **interface1** and connect to **interface1** on the remote gateway.
 
-When you run HA VPN tunnels between two Google Cloud VPCs, you need to make sure that the tunnel on interface0 is connected to interface0 on the remote VPN gateway. Similarly, the tunnel on interface1 must be connected to interface1 on the remote VPN gateway.
+When you run HA VPN tunnels between two Google Cloud VPCs, you need to make sure that the tunnel on **interface0** is connected to **interface0** on the remote VPN gateway. Similarly, the tunnel on **interface1** must be connected to **interface1** on the remote VPN gateway.
+
+In this workhop you are simulating an on-premises setup with both VPN gateways in Google Cloud. You ensure that **interface0** of one gateway connects to **interface0** of the other and **interface1** connects to **interface1** of the remote gateway.
+
+1. Create the first VPN tunnel in the **vpc-demo network**:
+
+![HA-VPN-GATEWAY-VPC-DEMO](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/726c21e4-3c7a-4650-8a66-53effd0447c9)
+
+```console
+gcloud compute vpn-tunnels create vpc-demo-tunnel0 \
+    --peer-gcp-gateway on-prem-vpn-gw1 \
+    --region us-central1 \
+    --ike-version 2 \
+    --shared-secret [SHARED_SECRET] \
+    --router vpc-demo-router1 \
+    --vpn-gateway vpc-demo-vpn-gw1 \
+    --interface 0
+```
+
+The output should look similar to this:
+
+![vpn-tunnel-vpc-demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/0989d6c0-d932-4cee-a4a8-6e566e894c1e)
+
+2. Create the second VPN tunnel in the vpc-demo network:
+
+![s2n-vpc-demo-vpn-tunnel](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/cf59ef2b-98b2-4a27-870d-32845988d726)
+
+
+```console
+gcloud compute vpn-tunnels create vpc-demo-tunnel1 \
+    --peer-gcp-gateway on-prem-vpn-gw1 \
+    --region us-central1 \
+    --ike-version 2 \
+    --shared-secret [SHARED_SECRET] \
+    --router vpc-demo-router1 \
+    --vpn-gateway vpc-demo-vpn-gw1 \
+    --interface 1
+```
+
+The output should look similar to this:
+
+![VPC-DEMO-2nd-VPN-TUNNEL](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/3e2d9df0-9959-4328-b762-7345d79fb6b3)
+
+3. Create the <ins>first</ins> VPN tunnel in the **on-prem network**:
+
+![first-on-prem-vpn-tunnel](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/4d75f19c-8d1d-458b-9b65-a35bd9b5b992)
+
+```console
+gcloud compute vpn-tunnels create on-prem-tunnel0 \
+    --peer-gcp-gateway vpc-demo-vpn-gw1 \
+    --region us-central1 \
+    --ike-version 2 \
+    --shared-secret [SHARED_SECRET] \
+    --router on-prem-router1 \
+    --vpn-gateway on-prem-vpn-gw1 \
+    --interface 0
+```
+
+The output should look similar to this:
+
+![1st-VPN-TUNNEL-on-prem](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/3eb471d0-3787-4d74-9803-7f76de580ad8)
+
+
+4. Create the second VPN tunnel in the on-prem network:
+
