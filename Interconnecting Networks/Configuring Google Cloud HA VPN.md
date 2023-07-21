@@ -35,7 +35,9 @@ gcloud compute networks create vpc-demo --subnet-mode custom
 **Note:** If it is needed "Authorize" your CLoud Shell.
 
 The output should look similar to this:
-![create_vpc](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/a6608d34-9da6-4789-a179-b586027e6a03)
+
+![vpc-demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f6960399-eb0e-43b4-b06b-3447e364c804)
+
 
 2. In Cloud Shell, create **subnet** ```vpc-demo-subnet1``` in the region **us-central1**:
 
@@ -46,7 +48,9 @@ gcloud compute networks subnets create vpc-demo-subnet1 \
 --network vpc-demo --range 10.1.1.0/24 --region us-central1
 ```
 The output should look similar to this:
-![vpc-demo-subnet](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/81accd19-25cb-4acb-9ef9-554bf6a2f6af)
+
+![vpc-demo-subnet1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/71bc811f-fd0f-4aad-bd23-08cdedd9f974)
+
 
 3. Create subnet ```vpc-demo-subnet2``` in the region **us-east1**:
 
@@ -56,6 +60,12 @@ The output should look similar to this:
 gcloud compute networks subnets create vpc-demo-subnet2 \
 --network vpc-demo --range 10.2.1.0/24 --region us-east1
 ```
+
+The output should look similar to this:
+
+![vpc-demo-subnet2](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/eb69edd0-f24c-41f2-965b-510c77165502)
+
+
 4. Create a firewall rule to allow all custom traffic within the network:
 
 ![firewall-rule](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/15be99cc-a947-42cf-a825-7e404d99fe4e)
@@ -66,8 +76,10 @@ gcloud compute firewall-rules create vpc-demo-allow-custom \
   --allow tcp:0-65535,udp:0-65535,icmp \
   --source-ranges 10.0.0.0/8
 ```
+The output should look similar to this:
 
-![firewall-rule](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/63a89cd4-5df2-45ed-9e9c-967d311ce3fb)
+![vpc-firewall1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/ad820fb0-5840-4707-8c0b-b3aa16fd9156)
+
 
 5. Create a firewall rule to allow SSH, ICMP traffic from anywhere:
 
@@ -78,4 +90,32 @@ gcloud compute firewall-rules create vpc-demo-allow-ssh-icmp \
     --network vpc-demo \
     --allow tcp:22,icmp
 ```
+The output should look similar to this:
+
+![vpc-firewall2](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/98cf287c-eed2-4254-be39-dde8eea7d70d)
+
+6. Create a VM instance **vpc-demo-instance1** in zone **us-central1-b**:
+
+![vpc-demo-instance1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/6af0da31-437d-4bc9-8e6e-6bdfb099fe13)
+
+```console
+gcloud compute instances create vpc-demo-instance1 --zone us-central1-b --subnet vpc-demo-subnet1
+```
+The output should look similar to this:
+
+![vpc-demo-instance1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/9fdc3396-2580-4df7-8872-e21282bd79ad)
+
+7. Create a VM instance **vpc-demo-instance2** in zone **us-east1-b**:
+
+![vpc-demo-instance2](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/faf0a641-4d77-4314-bec2-c5008e1416c1)
+
+```console
+gcloud compute instances create vpc-demo-instance2 --zone us-east1-b --subnet vpc-demo-subnet2
+```
+The output should look similar to this:
+![vpc-demo-instance2](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/b99dcb89-1837-4b28-94f9-13f90d7e9b74)
+
+By the way, we have completed this part of the architecture with that only compute engine, firewall and subnet side that is shown above:
+![architecture1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f5f7dbf3-32d7-44bc-972c-a7f75f0e2f36)
+
 
