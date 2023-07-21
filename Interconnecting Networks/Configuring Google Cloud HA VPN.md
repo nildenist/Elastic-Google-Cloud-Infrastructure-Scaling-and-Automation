@@ -10,7 +10,9 @@ In this workshop you create a global VPC called vpc-demo, with two custom subnet
 
 In this workshop, you create HA VPN as in this architecture that you see in the following:
 
-![architecture-of-HA-VPN](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/339b5c96-42fd-42de-823c-0c981850d306)
+![architecture-of-HA-VPN](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/1eb27402-48aa-4899-948e-939c35340fc0)
+
+
 
 You will see that this architecture is splitted for each task with the related shell code. This will help your understanding for codes in which part you dealed with. 
 
@@ -32,8 +34,10 @@ In this workshop, you learn how to perform the following tasks:
 In this task you set up a Global VPC with **two** custom subnets and **two** VM instances running in each zone.
 
 1. In Cloud Shell, create a VPC network called vpc-demo:
-   
-![vpc_demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f06c371e-0ca2-4472-9a29-c0532a4eb7a5)
+
+![vpc_demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/279af7aa-e9f2-4810-bd57-f88df41421a1)
+
+
 
 ```console
 gcloud compute networks create vpc-demo --subnet-mode custom
