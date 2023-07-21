@@ -113,9 +113,79 @@ The output should look similar to this:
 gcloud compute instances create vpc-demo-instance2 --zone us-east1-b --subnet vpc-demo-subnet2
 ```
 The output should look similar to this:
+
 ![vpc-demo-instance2](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/b99dcb89-1837-4b28-94f9-13f90d7e9b74)
 
 By the way, we have completed this part of the architecture with that only compute engine, firewall and subnet side that is shown above:
 ![architecture1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f5f7dbf3-32d7-44bc-972c-a7f75f0e2f36)
 
+
+## Task 2. Set up a simulated on-premises environment
+
+In this task you create a VPC called **on-prem** that <ins>simulates</ins> an on-premises environment from where a customer connects to the Google cloud environment.
+
+1. In Cloud Shell, create a VPC network called **on-prem**:
+
+![vpc-on-prem](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/1b04eb8d-cc87-4b43-94f5-a6b7f4db881f)
+
+```console
+gcloud compute networks create on-prem --subnet-mode custom
+```
+
+The output should look similar to this:
+
+![vpc-network-create-on-prem](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/51437438-4f91-409f-885f-fe829c90bb81)
+
+2. Create a subnet called **on-prem-subnet1**:
+
+![on-prem-subnet1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/1baf6203-39ef-4b98-baba-dffea6a96534)
+
+```console
+gcloud compute networks subnets create on-prem-subnet1 \
+--network on-prem --range 192.168.1.0/24 --region us-central1
+```
+The output should look similar to this:
+
+![on-prem-subnet1-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/6a0c4b32-3924-434e-b8e8-3491dba12236)
+
+3. Create a firewall rule to allow all custom traffic within the network:
+
+![on-prem-firewallrules](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/86e2beb3-6035-4672-bd37-e78fb703decf)
+
+```console
+gcloud compute firewall-rules create on-prem-allow-custom \
+  --network on-prem \
+  --allow tcp:0-65535,udp:0-65535,icmp \
+  --source-ranges 192.168.0.0/16
+```
+The output should look similar to this:
+
+![on-prem-firewallrule1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/a6104456-f29e-4a5e-b3d4-c422b7ea7e0d)
+
+4. Create a firewall rule to allow SSH, RDP, HTTP, and ICMP traffic to the instances:
+   
+![on-prem-firewallrules](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/e27ebbca-fee4-46bd-8557-ebc8d5e5f2aa)
+
+```console
+gcloud compute firewall-rules create on-prem-allow-ssh-icmp \
+    --network on-prem \
+    --allow tcp:22,icmp
+```
+The output should look similar to this:
+
+![on-prem-firewall2](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/60540d4d-2070-4fae-812a-5d3cc3ba5b77)
+
+
+5. Create an instance called **on-prem-instance1** in the region **us-central1**:
+   
+![on=prem-instance1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f5b3f00e-f18c-4c2b-ac7a-024d4a5ac3a9)
+
+```console
+gcloud compute instances create on-prem-instance1 --zone us-central1-a --subnet on-prem-subnet1
+``` 
+The output should look similar to this:
+
+![on-prem-instance1-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/0ee45128-208f-4e21-ab96-ef65f243369b)
+
+## Task 3. Set up an HA VPN gateway
 
