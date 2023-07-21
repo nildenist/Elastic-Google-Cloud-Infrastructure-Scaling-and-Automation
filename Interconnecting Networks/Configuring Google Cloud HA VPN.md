@@ -279,7 +279,7 @@ When you run HA VPN tunnels between two Google Cloud VPCs, you need to make sure
 
 In this workhop you are simulating an on-premises setup with both VPN gateways in Google Cloud. You ensure that **interface0** of one gateway connects to **interface0** of the other and **interface1** connects to **interface1** of the remote gateway.
 
-1. Create the first VPN tunnel in the **vpc-demo network**:
+1. Create the <ins>first</ins> VPN tunnel in the **vpc-demo network**:
 
 ![HA-VPN-GATEWAY-VPC-DEMO](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/726c21e4-3c7a-4650-8a66-53effd0447c9)
 
@@ -298,7 +298,7 @@ The output should look similar to this:
 
 ![vpn-tunnel-vpc-demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/0989d6c0-d932-4cee-a4a8-6e566e894c1e)
 
-2. Create the second VPN tunnel in the vpc-demo network:
+2. Create the <ins>second</ins> VPN tunnel in the vpc-demo network:
 
 ![s2n-vpc-demo-vpn-tunnel](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/cf59ef2b-98b2-4a27-870d-32845988d726)
 
@@ -338,5 +338,371 @@ The output should look similar to this:
 ![1st-VPN-TUNNEL-on-prem](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/3eb471d0-3787-4d74-9803-7f76de580ad8)
 
 
-4. Create the second VPN tunnel in the on-prem network:
+4. Create the <ins>second</ins> VPN tunnel in the on-prem network:
+
+![second-vpn-tunnel-on-prem](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/25191577-2928-4f8d-b121-4f5759f238c6)
+
+```console
+gcloud compute vpn-tunnels create on-prem-tunnel1 \
+    --peer-gcp-gateway vpc-demo-vpn-gw1 \
+    --region us-central1 \
+    --ike-version 2 \
+    --shared-secret [SHARED_SECRET] \
+    --router on-prem-router1 \
+    --vpn-gateway on-prem-vpn-gw1 \
+    --interface 1
+```
+
+The output should look similar to this:
+
+![second-vpn-tunnel-on-prem-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/01e00afa-91fb-4d69-a7c3-f3c6fdf457df)
+
+## Task 5. Create Border Gateway Protocol (BGP) peering for each tunnel
+
+In this task you configure BGP peering for each VPN tunnel between **vpc-demo** and **VPC on-prem**. HA VPN requires dynamic routing to enable 99.99% availability.
+
+1. Create the router interface for **tunnel0** in network **vpc-demo**:
+
+![interface-bgp-peer-tunnel0-vpc-demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/0942b6b0-2c90-486c-8e2e-e9ca65619a05)
+
+
+```console
+gcloud compute routers add-interface vpc-demo-router1 \
+    --interface-name if-tunnel0-to-on-prem \
+    --ip-address 169.254.0.1 \
+    --mask-length 30 \
+    --vpn-tunnel vpc-demo-tunnel0 \
+    --region us-central1
+```
+The output should look similar to this:
+
+![tunnel0-vpc-demo-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/fd02eb8b-3cd7-4f80-aa7a-f20c91413b7b)
+
+2. Create the BGP peer for **tunnel0** in network **vpc-demo**:
+
+![interface-bgp-peer-tunnel0-vpc-demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/66f523a1-a667-4198-b5ba-15119197025c)
+
+
+```console
+gcloud compute routers add-bgp-peer vpc-demo-router1 \
+    --peer-name bgp-on-prem-tunnel0 \
+    --interface if-tunnel0-to-on-prem \
+    --peer-ip-address 169.254.0.2 \
+    --peer-asn 65002 \
+    --region us-central1
+```
+
+The output should look similar to this:
+
+![tunnel0-BGP-peer-vpc-demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f10450e8-7b33-4520-8b37-cb937b853020)
+
+3. Create a router interface for **tunnel1** in network **vpc-demo**:
+   
+![interface-bgp-peer-tunnel1-vpc-demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/bd685d44-d599-4243-9484-14c4932d5fda)
+
+```console
+gcloud compute routers add-interface vpc-demo-router1 \
+    --interface-name if-tunnel1-to-on-prem \
+    --ip-address 169.254.1.1 \
+    --mask-length 30 \
+    --vpn-tunnel vpc-demo-tunnel1 \
+    --region us-central1
+```
+
+The output should look similar to this:
+
+![3tunnel1-vpc-demo-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/714a796f-5fc8-4e2b-9a68-576782a69633)
+
+4. Create the BGP peer for **tunnel1** in network **vpc-demo**:
+
+![interface-bgp-peer-tunnel1-vpc-demo](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/6acc3f77-0cc7-44c0-a87c-a2636d02ba5f)
+
+```console
+gcloud compute routers add-bgp-peer vpc-demo-router1 \
+    --peer-name bgp-on-prem-tunnel1 \
+    --interface if-tunnel1-to-on-prem \
+    --peer-ip-address 169.254.1.2 \
+    --peer-asn 65002 \
+    --region us-central1
+```
+The output should look similar to this:
+
+![tunnel1-bgp-peer-vpc-demo-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/1d662392-7666-436c-843e-491c41fc55a0)
+
+5. Create a router interface for **tunnel0** in network **on-prem**:
+6. 
+![tunnel0-on-prem-intrface-bgp-peer](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/6a8b5cb0-e999-4926-9aff-1b9665196757)
+
+```console
+gcloud compute routers add-interface on-prem-router1 \
+    --interface-name if-tunnel0-to-vpc-demo \
+    --ip-address 169.254.0.2 \
+    --mask-length 30 \
+    --vpn-tunnel on-prem-tunnel0 \
+    --region us-central1
+```
+
+The output should look similar to this:
+
+![tunnel-0-on-prem-interface-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/c29c3f4f-efd6-47fa-a62b-e5a4495e51ea)
+
+6. Create the BGP peer for **tunnel0** in network **on-prem**:
+   
+![tunnel0-on-prem-intrface-bgp-peer](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/c4882264-fc2b-4990-9397-e3611dbd19c6)
+
+```console
+gcloud compute routers add-bgp-peer on-prem-router1 \
+    --peer-name bgp-vpc-demo-tunnel0 \
+    --interface if-tunnel0-to-vpc-demo \
+    --peer-ip-address 169.254.0.1 \
+    --peer-asn 65001 \
+    --region us-central1
+```
+
+7. Create a router interface for **tunnel1** in network **on-prem**:
+
+![tunnel1-interface-bgp-peer-on-prem](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/350ccb9a-3f54-4b35-9b71-3b9f467d3177)
+
+```console
+gcloud compute routers add-interface  on-prem-router1 \
+    --interface-name if-tunnel1-to-vpc-demo \
+    --ip-address 169.254.1.2 \
+    --mask-length 30 \
+    --vpn-tunnel on-prem-tunnel1 \
+    --region us-central1
+```
+
+The output should look similar to this:
+
+![tunnel1-on-prem-interface-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/c589aaab-6bb2-44cd-948f-9c5f12325717)
+
+8. Create the BGP peer for **tunnel1** in network **on-prem**:
+   
+![tunnel1-interface-bgp-peer-on-prem](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/98bc7bfd-22df-4cbd-808a-ceeeac39b9fb)
+
+```console
+gcloud compute routers add-bgp-peer  on-prem-router1 \
+    --peer-name bgp-vpc-demo-tunnel1 \
+    --interface if-tunnel1-to-vpc-demo \
+    --peer-ip-address 169.254.1.1 \
+    --peer-asn 65001 \
+    --region us-central1
+```
+The output should look similar to this:
+
+![tunnel1-bgp-peer-on-prem-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/aedd8063-b5cc-4cfc-aa6c-afc2787ac51a)
+
+## Task 6. Verify router configurations
+
+In this task you verify the router configurations in both VPCs. You ***configure firewall rules to allow traffic between each VPC*** and verify the status of the tunnels. You also verify private connectivity over VPN between each VPC and enable global routing mode for the VPC.
+
+1. View details of Cloud Router **vpc-demo-router1** to verify its settings:
+
+```console
+gcloud compute routers describe vpc-demo-router1 \
+    --region us-central1
+```
+
+The output should look similar to this:
+
+![vpc-demo-router1-verify-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/ad0154a9-8bac-4468-adb1-b29557fd5479)
+
+2. View details of Cloud Router **on-prem-router1** to verify its settings:
+
+```console
+gcloud compute routers describe on-prem-router1 \
+    --region us-central1
+```
+
+The output should look similar to this:
+
+![on-prem-router1-verify-output](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/bc0126f2-de86-4965-928d-590c58dda797)
+
+### Configure firewall rules to allow traffic from the remote VPC
+
+Configure firewall rules to allow traffic from the private IP ranges of peer VPN.
+
+1. Allow traffic from network VPC **on-prem** to **vpc-demo**:
+
+```console
+gcloud compute firewall-rules create vpc-demo-allow-subnets-from-on-prem \
+    --network vpc-demo \
+    --allow tcp,udp,icmp \
+    --source-ranges 192.168.1.0/24
+```
+
+The output should look similar to this:
+
+![remotevpc-firewall](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/0a1a3383-0431-4c66-827a-f52d3241e5b9)
+
+
+2. Allow traffic from **vpc-demo** to network VPC **on-prem**:
+
+```console
+gcloud compute firewall-rules create on-prem-allow-subnets-from-vpc-demo \
+    --network on-prem \
+    --allow tcp,udp,icmp \
+    --source-ranges 10.1.1.0/24,10.2.1.0/24
+```
+
+The output should look similar to this:
+
+![firewallfomvpcdemotoonprem](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/08178af7-1677-4cba-bd35-85b8fe7a75b0)
+
+### Verify the status of the tunnels
+
+1. List the VPN tunnels you just created:
+
+```console
+gcloud compute vpn-tunnels list
+```
+
+There should be four VPN tunnels (two tunnels for each VPN gateway). The output should look similar to this:
+
+![list-of-vpn-tunnels](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/7ca0f77b-b86f-476f-a8ff-ecea16e323e6)
+
+2. Verify that **vpc-demo-tunnel0** tunnel is up:
+
+```console
+gcloud compute vpn-tunnels describe vpc-demo-tunnel0 \
+      --region us-central1
+```
+
+The tunnel output should show detailed status as ***Tunnel is up and running***.
+
+![vpc-demo-tunnel0](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/60f37ee3-dc91-4344-bbad-ce2005b526d5)
+
+3. Verify that ***vpc-demo-tunnel1** tunnel is up:
+
+```console
+gcloud compute vpn-tunnels describe vpc-demo-tunnel1 \
+      --region us-central1
+```
+
+The tunnel output should show detailed status as Tunnel is up and running.
+
+![vcp-demo-tunnel1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/25b0c3f4-36ef-4dc1-a399-d8063132642e)
+
+4. Verify that **on-prem-tunnel0** tunnel is up:
+
+```console
+gcloud compute vpn-tunnels describe on-prem-tunnel0 \
+      --region us-central1
+```
+
+The tunnel output should show detailed status as Tunnel is up and running.
+
+![on-prem-tunnel0](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/06000cdf-9e8c-402d-9980-7228c46e3889)
+
+5. Verify that **on-prem-tunnel1** tunnel is up:
+
+```console
+gcloud compute vpn-tunnels describe on-prem-tunnel1 \
+      --region us-central1
+```
+
+The tunnel output should show detailed status as Tunnel is up and running.
+
+![on-prem-tunnel1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/b239ca36-8f44-4e95-8c84-5c69c743fe65)
+
+
+### Verify private connectivity over VPN
+
+1. Open a new Cloud Shell tab and type the following to connect via SSH to the instance **on-prem-instance1**:
+
+```console
+gcloud compute ssh on-prem-instance1 --zone us-central1-a
+```
+
+The output should look similar to this:
+
+![ssh-on-prem-instance1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/2435c6fd-9354-4dcb-91af-021bbdd7c751)
+
+
+2.Type "y" to confirm that you want to continue.
+3. Press **Enter** twice to skip creating a password.
+4. From the instance **on-prem-instance1** in network **on-prem**, to reach instances in network **vpc-demo**, ping 10.1.1.2:
+
+```console
+ping -c 4 10.1.1.2
+```
+
+Pings are successful. The output should look similar to this:
+
+![ping](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/2439e809-2096-470d-8672-4b2823957a57)
+
+### Global routing with VPN
+
+HA VPN is a ***regional*** resource and cloud router that by default <ins>only sees</ins> the routes in the ***region*** in which it is deployed. To reach instances in a ***different region*** than the cloud router, you <ins>need to enable global routing mode for the VPC</ins>. This allows the cloud router to see and advertise routes from other regions.
+
+1. Open a new Cloud Shell tab and update the **bgp-routing mode** from **vpc-demo** to **GLOBAL**:
+
+```console
+gcloud compute networks update vpc-demo --bgp-routing-mode GLOBAL
+```
+
+The output should look similar to this:
+
+![global](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/0b4bccf7-e0f1-4ec2-a54f-61c5039e967b)
+
+2. Verify the change:
+
+```console
+gcloud compute networks describe vpc-demo
+```
+
+The output should look similar to this:
+
+![verify-global](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/a77a5b57-5df5-4cdb-af03-1a80e58c75eb)
+
+3. From the Cloud Shell tab that is currently connected to the instance in network **on-prem** via **ssh**, ping the instance **vpc-demo-instance2** in region us-east1:
+
+```console
+ping -c 2 10.2.1.2
+```
+Pings are successful. The output should look similar to this:
+
+![ping-to-another-region](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/dc965938-da2b-45d6-979e-33ef042e9e25)
+
+## Task 7. Verify and test the configuration of HA VPN tunnels
+
+In this task you will test and verify that the high availability configuration of each HA VPN tunnel is successful.
+
+1. Open a new Cloud Shell tab.
+2. Bring **tunnel0** in network **vpc-demo** down:
+
+```console
+gcloud compute vpn-tunnels delete vpc-demo-tunnel0  --region us-central1
+```
+
+Respond "y" when asked to verify the deletion. The respective **tunnel0** in network **on-prem** will go down.
+
+The output should look similar to this:
+
+![tunnel-deleted](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/dc5cd458-2c6c-4c68-a419-3668a89220b9)
+
+3. Verify that the tunnel is down:
+
+```console
+gcloud compute vpn-tunnels describe on-prem-tunnel0  --region us-central1
+```
+
+The detailed status should show as ***Handshake_with_peer_broken***.
+
+![verify-tunnel-is-down](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/a2b6918b-8fa5-493d-91a1-394e1dcaf235)
+
+
+4. Switch to the previous Cloud Shell tab that has the open **ssh** session running, and verify the pings between the instances in network **vpc-demo** and network **on-prem**:
+
+```console
+ping -c 3 10.1.1.2
+```
+Pings are still successful because the traffic is now sent over the second tunnel. You have successfully configured HA VPN tunnels.
+
+## Task 9: Review
+
+In this workshop you configured HA VPN gateways. You also configured dynamic routing with VPN tunnels and configured global dynamic routing mode. Finally you verified that HA VPN is configured and functioning correctly.
+
+
+
 
