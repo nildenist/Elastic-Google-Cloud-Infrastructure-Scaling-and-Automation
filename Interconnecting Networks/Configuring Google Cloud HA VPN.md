@@ -1,4 +1,4 @@
-# Configuring Google Cloud HA VPN
+ # Configuring Google Cloud HA VPN
 
 ## Overview
 
@@ -194,7 +194,7 @@ The output should look similar to this:
 
 5. Create an instance called **on-prem-instance1** in the region **us-central1**:
    
-![on=prem-instance1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/4cec3bdc-15de-49ab-b727-ed862b0e5113)
+![on-prem-instance1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/42382df7-3e9c-4929-b838-111e32783b3f)
 
 ```console
 gcloud compute instances create on-prem-instance1 --zone us-central1-a --subnet on-prem-subnet1
