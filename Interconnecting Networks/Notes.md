@@ -144,7 +144,7 @@ Cloud VPN supports both static and dynamic routes.
 In order to use dynamic routes, you need to configure Cloud Routers.
 
 <p align="left">
-  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/03b239ec-77ab-46a4-bcd5-c57ac862e253" />
+  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/3d04abd3-11df-44d7-b2f5-ea4b840b42e1" />
 </p> 
 
 Cloud Router can manage routes for a Cloud VPN tunnel using **B**order **G**ateway **P**rotocol, or BGP.  This routing method **allows** for routes to be updated and exchanged <ins>without changing</ins> the tunnel configuration.
