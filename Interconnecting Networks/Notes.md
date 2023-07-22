@@ -2,9 +2,8 @@
 
 ## What is Cloud VPN?
 
-
 <p align="left">
-  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/436f3e98-87d1-4d60-aea7-94f2b72cfa39"/> 
+  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/5295b1a3-37a4-4821-ab6b-1b9333724942"/> 
 </p> 
 
 **Cloud VPN** securely connects your on-premises network to your Google Cloud VPC network through an **IPsec VPN tunnel**.
@@ -19,14 +18,15 @@ Cloud VPN <ins>doesn't support</ins> use cases where client computers need to â€
 
 Also, dynamic routes are configured with **Cloud Router**.
 
-![cloudVPN1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/bcb84884-7101-4bf2-ac8c-30e71b29b016)
+![cloudVPN1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/5b590314-e80c-4e8a-a1d0-9013035b9821)
 
 
 Cloud VPN overview: https://cloud.google.com/vpn/docs/concepts/overview
 
 ## Classic VPN Topology
 
-![cloudVPN2](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/fdb757b3-a847-43d6-a4ae-7cf5131af2fa)
+![cloudVPN2](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/cf44368c-f2af-4a63-98ad-6da370ba2981)
+
 
 This diagram shows a Classic VPN connection between your VPC and on-premises network.
 
@@ -56,7 +56,8 @@ MTU considerations: https://cloud.google.com/vpn/docs/concepts/mtu-consideration
 
 In addition to Classic VPN, Google Cloud also offers a second type of Cloud VPN gateway, HA VPN.
 
-![HAVPN1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/d2345baf-7962-4fb3-bc4c-cd162bdcff32)
+![HAVPN1](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/6c08da75-4bb8-4c1f-a593-c47433d1aa42)
+
 
 HA VPN is a **h**igh **a**vailability Cloud VPN solution that lets you securely connect your on-premises network to your Virtual Private Cloud (VPC) network through an **IPsec VPN connection** in a ***single region***.
 
@@ -92,7 +93,8 @@ There are three typical peer gateway configurations for HA VPN.
 
 Let's walk through an example.
 
-![HAPNVtoPeerVPN](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/0b65fd41-23a0-4ebd-9599-ff8ae106b707)
+![HAPNVtoPeerVPN](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f5710d8c-c27f-482d-bc11-f6a14212ef7a)
+
 
 In this topology, **one** HA VPN gateway connects to **two** peer devices. <br/>
 Each peer device has **one** interface and **one** external IP address.<br/>
@@ -107,7 +109,8 @@ When configuring an HA VPN external VPN gateway to Amazon Web Services (AWS), yo
 
 When enabled, ECMP ***equally*** distributes traffic across active tunnels.
 
-![HAVPNAWS](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/65d0e4fa-227c-419f-b30f-b420e8099179)
+![HAVPNAWS](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/f2274a54-f7bd-4843-8554-d3f640a8ba31)
+
 
 In this topology, there are **three** major gateway components to set up for this configuration.
   - An **HA VPN gateway** in Google Cloud with two interfaces,
@@ -122,7 +125,8 @@ The <ins>supported</ins> AWS configuration uses a **total of four tunnels**.Two 
 
 You can connect two Google Cloud VPC networks together by using an HA VPN gateway in each network.
 
-![HAVPNbetweenGCnetworks](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/c83575e4-1319-43a5-864f-29509cfbfdb2)
+![HAVPNbetweenGCnetworks](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/e113da68-644e-45bb-9946-a97f3bd71a24)
+
 
 The configuration shown provides 99.99% availability.
 
@@ -140,13 +144,13 @@ Cloud VPN supports both static and dynamic routes.
 In order to use dynamic routes, you need to configure Cloud Routers.
 
 <p align="left">
-  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/7ddeeb48-58d2-4611-9df2-62f3e327a216" />
+  <img src="https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/03b239ec-77ab-46a4-bcd5-c57ac862e253" />
 </p> 
-
 
 Cloud Router can manage routes for a Cloud VPN tunnel using **B**order **G**ateway **P**rotocol, or BGP.  This routing method **allows** for routes to be updated and exchanged <ins>without changing</ins> the tunnel configuration.
 
-![CloudRouter](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/398051e2-4e62-4f44-ae98-0a317a1756b0)
+![CloudRouter](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/b0c9ad02-cfed-4967-9f2a-b29813401f89)
+
 
 
 This diagram shows two different regional subnets in a VPC network, namely Test and Prod. The on-premises network has ***29*** subnets, and the two networks are connected through **Cloud VPN tunnels**.
