@@ -10,9 +10,7 @@ In this workshop you create a global VPC called vpc-demo, with two custom subnet
 
 In this workshop, you create HA VPN as in this architecture that you see in the following:
 
-![architecture-of-HA-VPN](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/1eb27402-48aa-4899-948e-939c35340fc0)
-
-
+![HA-VPN-Architecture](https://github.com/nildenist/Elastic-Google-Cloud-Infrastructure-Scaling-and-Automation/assets/28653377/8a221a65-3dfe-43c5-9faf-65a26cc4d6dc)
 
 You will see that this architecture is splitted for each task with the related shell code. This will help your understanding for codes in which part you dealed with. 
 
